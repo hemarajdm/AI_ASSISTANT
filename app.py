@@ -1,5 +1,4 @@
 import streamlit as st
-
 st.set_page_config(
     page_title="LLM",
     layout="centered"
@@ -27,17 +26,7 @@ st.success("Groq API connected successfully!")
 
 st.write("Welcome to your AI Interview Assistant.")
 
-role = st.selectbox(
-    "Job Title",
-    [
-        "Machine Learning Engineer",
-        "Senior Software Engineering",
-        "data analysis",
-        "cyber security",
-        "software develovper",
-        "Others"
-    ]
-)
+role = st.selectbox("Job Title", ["Machine Learning Engineer", "Senior Software Engineering", "data analysis", "cyber security", "software develovper", "Others"])
 
 if role == "Others":
     st.text_input("Enter your Job Title", "XXXXXX")
@@ -53,21 +42,11 @@ model = st.selectbox(
 level = st.selectbox(
     "choose your level",
     [
-        "begginer",
-        "intermideate",
-        "advanced"
+        "begginer", "intermideate", "advanced"
     ]
 )
 
-mode = st.radio(
-    "Activity",
-    [
-        "Generate Questions",
-        "Generate Code Questions",
-        "Evaluate Answers",
-        "Improve answers"
-    ]
-)
+mode = st.radio("Activity", ["Generate Questions", "Generate Code Questions", "Evaluate Answers", "Improve answers"])
 
 if mode == "Generate Questions":
     count = st.slider("Number Of Questions", 1, 10, 5)
@@ -84,72 +63,20 @@ else:
     answer = st.text_area("Enter Your Answer", height=160)
 
 if st.button("Generate AI Response", type="primary"):
-
-    if mode in ["Evaluate Answers", "Improve answers"] and (
-        not question.strip() or not answer.strip()
-    ):
+    if mode in ["Evaluate Answers", "Improve answers"] and (not question.strip() or not answer.strip()):
         st.warning("please enter a valid Question and Answer")
         st.stop()
 
-    topics = "Topic is " + (topic if mode == "Generate Code Questions" else "") + " Difficulty is " + level
+    topics = "Topic is " + topic + "Difficulty is " + level
 
     if mode == "Generate Questions":
-        task = (
-            "Generate " + str(count) +
-            " Frequently asked Interview question 3 situation based questions as well as 2 theory questions"
-        )
+        task = "Generate" + str(count) + "Frequently asked Interview question 3 situation based questions as well as 2 theory questions"
 
     elif mode == "Generate Code Questions":
-        task = (
-            "Generate " + str(count) +
-            " Frequently asked Coding or technical questions for the topics "
-            + topic +
-            " and give me the hints with accurate performance."
-        )
+        task = "Generate" + str(count) + "Frequently asked Coding or technical questions for the topics" + topic + "and give me the hints with accurate performance."
 
     elif mode == "Evaluate Answers":
-        task = (
-            "Question: " + question +
-            " Answer: " + answer +
-            " Evaluate the answer based on the question and identify the drawbacks."
-        )
+        task = "Question:" + question + "Answer: " + answer + "Evaluate the answer based on the question and identify the drawbacks."
 
     elif mode == "Improve answers":
-        task = (
-            "Question: " + question +
-            " Answer: " + answer +
-            " Improve the answer based on the result and highlight the important points."
-        )
-
-    with st.spinner("Generating response..."):
-        try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Act as a professional interviewer."
-                    },
-                    {
-                        "role": "user",
-                        "content": topics + "\n" + task
-                    }
-                ],
-                temperature=0.7,
-                max_tokens=2000
-            )
-
-            output = response.choices[0].message.content
-
-            st.subheader("AI Response")
-            st.markdown(output)
-
-            st.download_button(
-                "Download Response",
-                output,
-                file_name="Interview_Response.txt",
-                mime="text/plain"
-            )
-
-        except Exception as e:
-            st.error(f"API connection was unsuccessful: {e}")
+        task = "Question:" + question + "Answer: " + answer + "Improve the answer based on the result and highligth the important points."
