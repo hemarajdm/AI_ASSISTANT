@@ -11,7 +11,7 @@ except (KeyError, FileNorFound):
 role = st.selectbox("JOB TITLE", ['software engineer','senior software engineer', 'data analyst','prompt engineer', 'Devops engineer', 'other'])
 if role == "other":
   st.text_input("Enter your job title ","XXXXXXX")
-role = st.selectbox("model", ['openai/gpt-oss-20b', 'openai/gpt-oss-120b'])
+gen_model = st.selectbox("model", ['openai/gpt-oss-20b', 'openai/gpt-oss-120b'])
 role = st.selectbox("difficult level", ['bigginer','intermidiate','advance'])
 mode = st.radio('Activity', ['generate questions', 'generate code questions', 'evaluate answer','improve answers'])
 if mode == 'generate questions':
@@ -31,8 +31,18 @@ if st.button("Generate AI Response", type = "primary"):
   if mode == "generate questions":
     task = "generate" + str(count) + "Frequenrtly asked Interview question 3 theory and 2 conceptual. do not give answers. give hints"
   elif mode == "generate code questions":
-    task = "generate" + str(count) + "Frequenrtly askedcodeing question on "
+    task = "generate" + str(count) + "Frequenrtly askedcodeing question on " + topic + " anything can be related to topic "
   elif mode == "evaluate answer":
     task = "question :" + question + "MY Answer : " + answer + "Evalute this answer based on concept, relevence , communication, length of answe. give each rating out of 5 in a list. "
    elif mode == "improve answers":
-     task = "question :" + question + "MY Answer : " + answer + "imporve the answern based oon choice on words key words to include "
+     task = "question :" + question + "MY Answer : " + answer + "imporve the answern based oon choice on words key words to include. do not invent anything about candidate " 
+   background = "job role :" + role + "difficult levet " + level
+   with st.spinner(" generating your answer .... "):
+     try:
+       response = client.chat.completions.create(
+         model = gen_model,
+         messages = [{"role":"system","content":"Act as a senoir interviewer , both HR and technicall expert"},
+                     {"role" : "user",
+                     "content" : backgroound + task }],
+         temprature = 0.7,
+         max_tokens = 2000
